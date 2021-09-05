@@ -1,6 +1,7 @@
 import React from 'react'
 import { auth } from '../firebase'
 import { withRouter } from 'react-router-dom';
+import Firestore from './Firestore';
 
 
 const Admin = (props) => {
@@ -16,11 +17,10 @@ const Admin = (props) => {
     }, [props.history])
 
     return (
-        <div>
-           <h2>Bienvenido a la zona de administracion</h2> 
+        <div className="py-5">
            {
                user && (
-                   <h3>Usuario: {user.email}</h3>
+                   <Firestore user={user}/>
                )
            }
         </div>

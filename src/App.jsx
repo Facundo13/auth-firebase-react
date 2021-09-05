@@ -3,6 +3,7 @@ import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
 import Admin from './components/Admin';
 import Login from './components/Login';
 import Navbar from './components/Navbar';
+import Reset from './components/Reset';
 import {auth} from './firebase';
 
 function App() {
@@ -21,7 +22,7 @@ function App() {
 
   return firebaseUser !== false ?  (
     <Router>
-      <div>
+      <div className="container">
         <Navbar firebaseUser = {firebaseUser}/>
         <Switch>
           <Route path="/login">
@@ -29,6 +30,9 @@ function App() {
           </Route>
           <Route path="/admin">
             <Admin/>
+          </Route>
+          <Route path="/reset">
+            <Reset/>
           </Route>
           <Route path="/">
             Inicio..

@@ -1,64 +1,63 @@
 import React from 'react'
-import {auth, db} from '../firebase'
+import { auth, db } from '../firebase'
 import { withRouter } from 'react-router-dom';
 
 const Login = (props) => {
 
-    const [email,setEmail] = React.useState('');
-    const [pass,setPass] = React.useState('');
+    const [email, setEmail] = React.useState('');
+    const [pass, setPass] = React.useState('');
     const [error, setError] = React.useState(null);
     const [esRegistro, setEsRegistro] = React.useState(true);
 
     const procesarDatos = e => {
         e.preventDefault();
-        if(!email.trim()){
+        if (!email.trim()) {
             setError('Ingrese email')
             return;
         }
-        if(!pass.trim()){
+        if (!pass.trim()) {
             setError('Ingrese password')
             return;
         }
-        if(pass.length < 6){
+        if (pass.length < 6) {
             setError('Ingrese un password mayor a 6 caracteres')
             return;
         }
 
         setError(null);
 
-        if(esRegistro){
+        if (esRegistro) {
             registrar()
-        }else{
+        } else {
             loguear();
         }
     }
 
-    const loguear = React.useCallback(async() => {
+    const loguear = React.useCallback(async () => {
         try {
-            const res = await auth.signInWithEmailAndPassword(email,pass)
+            const res = await auth.signInWithEmailAndPassword(email, pass)
             setEmail('');
             setPass('');
             setError(null);
             props.history.push('/admin')
         } catch (e) {
             console.log(e);
-            if(e.code === 'auth/wrong-password'){
+            if (e.code === 'auth/wrong-password') {
                 setError('La contraseña es incorrecta');
             }
-            if(e.code === 'auth/user-not-found'){
+            if (e.code === 'auth/user-not-found') {
                 setError('No existe un usuario registrado con ese email');
             }
         }
-    },[email,pass, props.history])
+    }, [email, pass, props.history])
 
-    const registrar = React.useCallback(async() =>{
+    const registrar = React.useCallback(async () => {
         try {
             const res = await auth.createUserWithEmailAndPassword(email, pass)
             await db.collection('usuarios').doc(res.user.email).set({
                 email: res.user.email,
                 uid: res.user.uid
             })
-
             setEmail('');
             setPass('');
             setError(null);
@@ -66,10 +65,10 @@ const Login = (props) => {
 
         } catch (e) {
             console.log(e);
-            if(e.code === 'auth/invalid-email'){
+            if (e.code === 'auth/invalid-email') {
                 setError('El email tiene un formato inválido');
             }
-            if(e.code === "auth/email-already-in-use"){
+            if (e.code === "auth/email-already-in-use") {
                 setError('El email esta siendo utilizado por otra cuenta')
             }
         }
@@ -80,7 +79,7 @@ const Login = (props) => {
             <h3 className="text-center">
                 {
                     esRegistro ? 'Registro de usuarios' : 'Login de acceso'
-                    
+
                 }
             </h3>
             <hr />
@@ -93,9 +92,17 @@ const Login = (props) => {
                             )
                         }
                         <input type="email" className="form-control mb-2" placeholder="Introduce tu email" onChange={e => setEmail(e.target.value)} value={email} />
-                        <input type="password" className="form-control mb-3" placeholder="Introduce tu password" onChange={e => setPass(e.target.value)} 
-                        value={pass}/>
-                        <button className="btn btn-dark btn-lg w-100 mb-2" type="submit">
+                        <input type="password" className="form-control" placeholder="Introduce tu password" onChange={e => setPass(e.target.value)}
+                            value={pass} />
+                        {
+                            !esRegistro &&
+                            (
+                                <button className="btn text-primary float-end" type="button" onClick={() => props.history.push('./reset')}>
+                                    ¿Olvidaste tu contraseña?
+                                </button>
+                            )
+                        }
+                        <button className="btn btn-dark btn-lg w-100 mt-3 mb-2" type="submit">
                             {
                                 esRegistro ? 'Registrarse' : 'Acceder'
                             }
